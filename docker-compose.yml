@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: shoe-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: shoe-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      API_V1_PREFIX: /api/v1
+      PROJECT_NAME: Shoe Store API
+      SECRET_KEY: ${SECRET_KEY}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+      REFRESH_TOKEN_EXPIRE_MINUTES: ${REFRESH_TOKEN_EXPIRE_MINUTES}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT}:8000"
+    volumes:
+      - ./backend:/app
+
+  client:
+    build:
+      context: ./frontend/client
+    container_name: shoe-client
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${API_BASE_URL}
+    depends_on:
+      - backend
+    ports:
+      - "${CLIENT_PORT}:5173"
+    volumes:
+      - ./frontend/client:/app
+      - /app/node_modules
+
+  admin:
+    build:
+      context: ./frontend/admin
+    container_name: shoe-admin
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${API_BASE_URL}
+    depends_on:
+      - backend
+    ports:
+      - "${ADMIN_PORT}:5173"
+    volumes:
+      - ./frontend/admin:/app
+      - /app/node_modules
+
+volumes:
+  mysql_data:
