@@ -1,27 +1,104 @@
-# 技术栈
+# Frontend Client - E-commerce
 
-该项目使用以下技术栈
+Aplicacion publica de la tienda construida con React, Vite y TypeScript.
+
+## Stack
+
+- React 18
 - Vite
 - TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- React Router
+- Tailwind y componentes UI
+- Axios para consumo de API
 
+## Requisitos
 
-# 开发流程
+- Node.js 18 o superior
+- npm 9 o superior
+- Backend corriendo en local
 
-1. 参考用户需求，调整 src/index.css 与 tailwind.config.ts 的主题风格
-2. 根据用户需求，划分出所需要实现的页面
-3. 整理好每个页面需要实现的功能，在 pages 下创建对应的文件夹及其下入口 Index.tsx
-4. 在 App.tsx 中创建路由配置，引入刚才的各个入口文件 Index.tsx
-5. 根据刚才整理的需求，如果需求简单，可以直接在 Index.tsx 中完成该页面的全部工作
-6. 如果需求复杂，可以将 page 拆分为若干个组件来实现，目录结构如下：
-    - Index.tsx 入口
-    - /components/ 组件
-    - /hooks/ 钩子
-    - /stores/ 如果有复杂交互通信时，可以使用 zustand 进行通信
-7. 在完成需求后，需要进行 pnpm i 安装依赖，并使用 npm run lint & npx tsc --noEmit -p tsconfig.app.json --strict 进行检查，并修复问题
+## Configuracion
 
-# 接入后端接口
-- 当需要新增接口或者操作 supabase 时，需要先在 src/api 新增对应 api 文件，并导出对应的数据类型，可以参考 src/demo.ts 文件，如果是 supabase 还需要做好实现
-- 前端与 supabase 做实现时，都需要完全按照数据类型进行实现，尽可能避免修改定好的数据类型，如果出现修改，需要检查所有引用该类型的文件
+1. Copia .env.example a .env.
+1. Define la URL de la API.
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api/v1
+```
+
+Si no defines esa variable, el proyecto usa ese valor por defecto.
+
+## Instalacion y ejecucion
+
+1. Instala dependencias.
+
+```bash
+npm install
+```
+
+1. Levanta entorno de desarrollo.
+
+```bash
+npm run dev
+```
+
+1. Genera build de produccion.
+
+```bash
+npm run build
+```
+
+1. Ejecuta preview local del build.
+
+```bash
+npm run preview
+```
+
+## Scripts
+
+- npm run dev: inicia Vite en desarrollo.
+- npm run build: compila para produccion.
+- npm run build:dev: compila en modo development con sourcemap.
+- npm run build:map: compila con sourcemap.
+- npm run preview: vista previa del build.
+- npm run preview:dev: build development y preview.
+- npm run lint: ejecuta lint.
+
+## Estructura recomendada
+
+- src/App.tsx: shell principal.
+- src/pages: paginas de negocio.
+- src/components: componentes reutilizables.
+- src/components/ui: libreria UI base.
+- src/api: clientes y funciones de API.
+- src/hooks: hooks custom.
+- src/data: datos locales y mocks.
+- src/lib: utilidades compartidas.
+
+## Integracion con backend
+
+Endpoints usados por el client:
+
+- GET /api/v1/products
+- GET /api/v1/products/:id
+- GET /api/v1/categories
+
+Archivo principal de API:
+
+- src/api/store.ts
+
+## Problemas comunes
+
+- Error de CORS:
+  - Revisa ALLOWED_ORIGINS en backend/.env.
+- API no responde:
+  - Verifica VITE_API_BASE_URL y que backend este en linea.
+- Pantalla en blanco despues de cambios:
+  - Limpia cache de Vite y reinicia npm run dev.
+
+## Buenas practicas para desarrollo
+
+- Mantener componentes pequenos y con responsabilidad unica.
+- Evitar logica de negocio pesada dentro de componentes de UI.
+- Centralizar llamadas HTTP en src/api.
+- Tipar respuestas de API para prevenir regresiones.
